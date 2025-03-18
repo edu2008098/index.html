@@ -1,1 +1,123 @@
 
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const app = express();
+
+// Middlewares
+app.use(express.json());
+app.use(cors());
+
+// Conectar ao MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => console.log("MongoDB Conectado!"))
+  .catch(err => console.log(err));
+
+// Definir a rota inicial
+app.get('/', (req, res) => {
+    res.send('API da Barbearia Rodando...');
+});
+
+// Porta do servidor
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+
+const mongoose = require('mongoose');
+
+const ClienteSchema = new mongoose.Schema({
+    nome: { type: String, required: true },
+    telefone: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
+    dataCadastro: { type: Date, default: Date.now }
+});
+
+module.exports = mongoose.model('Cliente', ClienteSchema);
+
+
+
+const express = require('express');
+const Cliente = require('../models/Cliente');
+const router = express.Router();
+
+// Criar um novo cliente
+router.post('/clientes', async (req, res) => {
+    try {
+        const { nome, telefone, email } = req.body;
+        const novoCliente = new Cliente({ nome, telefone, email });
+        await novoCliente.save();
+        res.status(201).json(novoCliente);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// Listar todos os clientes
+router.get('/clientes', async (req, res) => {
+    const clientes = await Cliente.find();
+    res.json(clientes);
+});
+
+// Buscar um cliente pelo ID
+router.get('/clientes/:id', async (req, res) => {
+    try {
+        const cliente = await Cliente.findById(req.params.id);
+        if (!cliente) return res.status(404).json({ message: "Cliente não encontrado" });
+        res.json(cliente);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Atualizar um cliente
+router.put('/clientes/:id', async (req, res) => {
+    try {
+        const cliente = await Cliente.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(cliente);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// Deletar um cliente
+router.delete('/clientes/:id', async (req, res) => {
+    try {
+        await Cliente.findByIdAndDelete(req.params.id);
+        res.json({ message: "Cliente removido com sucesso!" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+const clienteRoutes = require('./routes/clientes');
+app.use('/api', clienteRoutes);
+
+
+
+MONGO_URI=mongodb://localhost:27017/barbearia
+PORT=5000
+
+
+
+npm start
+
+
+
+POST http://localhost:5000/api/clientes (Cadastrar cliente)
+
+GET http://localhost:5000/api/clientes (Listar clientes)
+
+GET http://localhost:5000/api/clientes/:id (Buscar cliente)
+
+PUT http://localhost:5000/api/clientes/:id (Atualizar cliente)
+
+DELETE http://localhost:5000/api/clientes/:id (Remover cliente)
+
+
