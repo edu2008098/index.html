@@ -27,4 +27,4 @@
        });
    }
 
-   carregarAgendamentos();
+   carregarAgendamentos(); 
