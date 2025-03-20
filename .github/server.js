@@ -1,4 +1,4 @@
-const cors = require('cors');
+9const cors = require('cors');
    const bodyParser = require('body-parser');
    const fs = require('fs');
 
@@ -32,4 +32,4 @@ const cors = require('cors');
 
    app.listen(PORT, () => {
        console.log(`Servidor rodando em http://localhost:${PORT}`);
-   });
+   }); 
